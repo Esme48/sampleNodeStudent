@@ -1,6 +1,7 @@
 const express = require("express");
 const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
+const { storedUsers, setLoggedOnUser } = require("./util/memoryStore");
 const app = express();
 
 app.use(express.json({ limit: "1kb" }));
@@ -21,8 +22,11 @@ app.post("/testpost", (req, res) => {
 });
 
 app.post("/user", (req, res)=>{
-    console.log("This data was posted", JSON.stringify(req.body));
-    res.send("parsed the data");
+    const newUser = {...req.body}; // this makes a copy
+    storedUsers.push(newUser);
+    setLoggedOnUser(newUser);  // After the registration step, the user is set to logged on.
+    delete req.body.password;
+    res.status(201).json(req.body);
 });
 
 app.use(errorHandler);
