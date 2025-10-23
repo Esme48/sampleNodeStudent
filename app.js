@@ -3,6 +3,13 @@ const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
 const app = express();
 
+app.use((req, res, next) => {
+  console.log("Method:", req.method);
+  console.log("Path:", req.path);
+  console.log("Query:", req.query);
+  next();
+})
+
 app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
