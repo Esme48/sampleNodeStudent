@@ -9,6 +9,7 @@ if (!fs.existsSync(sampleFilesDir)) {
 }
 
 const otherFile = path.join(sampleFilesDir, 'demo.txt');
+const largeFile = path.join(sampleFilesDir, 'largefile.txt');
 
 // OS module
 console.log('Platform', os.platform())
@@ -35,7 +36,12 @@ writeandread()
 
 // Streams for large files- log first 40 chars of each chunk
 
-const readStream = fs.createReadStream(otherFile, { encoding: 'utf8' });
+
+const lines = Array.from({ length: 100 }, (_, i) => `This is line number ${i + 1}\n`).join('');
+fs.writeFileSync(largeFile, lines);
+console.log('Large file created successfully.');
+
+const readStream = fs.createReadStream(largeFile, { encoding: 'utf8', highWaterMark: 1024 });
 
 readStream.on('data', chunk => {
   console.log('Chunk (first 40 chars):', chunk.slice(0, 40));
