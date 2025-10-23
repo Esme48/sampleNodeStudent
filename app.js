@@ -1,7 +1,9 @@
 const express = require("express");
 const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
-const { storedUsers, setLoggedOnUser } = require("./util/memoryStore");
+
+const userRouter = require("./routes/user");
+
 const app = express();
 
 app.use(express.json({ limit: "1kb" }));
@@ -14,32 +16,25 @@ app.use((req, res, next) => {
 })
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.json({message: "Hello World."})
 });
 
 app.post("/testpost", (req, res) => {
   res.json({message: "Everything Worked."});
-});
+})
 
-app.post("/user", (req, res)=>{
-    const newUser = {...req.body}; // this makes a copy
-    storedUsers.push(newUser);
-    setLoggedOnUser(newUser);  // After the registration step, the user is set to logged on.
-    delete req.body.password;
-    res.status(201).json(req.body);
-});
+app.use("/user", userRouter);
 
 app.use(errorHandler);
 app.use(notFound);
 
-
 const port = process.env.PORT || 3000;
 try {
-  app.listen(port, () =>
-    console.log(`Server is listening on port ${port}...`),
-  );
+    app.listen(port, () =>
+        console.log(`Server is listening on port ${port}...`),
+    );
 } catch (error) {
-  console.log(error);
+    console.log(error);
 }
 
 let isShuttingDown = false;
