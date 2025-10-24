@@ -1,6 +1,6 @@
 const express = require("express");
-const errorHandler = require("./middleware/error-handler");
-const notFound = require("./middleware/not-found");
+const errorHandler = require("./assignment2/middleware/error-handler");
+const notFound = require("./assignment2/middleware/not-found");
 const app = express();
 
 app.use((req, res, next) => {
@@ -18,8 +18,8 @@ app.post("/testpost", (req, res) => {
   res.json({message: "Everything Worked."});
 })
 
-app.use(errorHandler);
 app.use(notFound);
+app.use(errorHandler);
 
 
 const port = process.env.PORT || 3000;
