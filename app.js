@@ -1,7 +1,11 @@
 const express = require("express");
 const errorHandler = require("./assignment2/middleware/error-handler");
 const notFound = require("./assignment2/middleware/not-found");
+
+const userRouter = require("./routes/user");
 const app = express();
+
+app.use(express.json({ limit: "1kb" }));
 
 app.use((req, res, next) => {
   console.log("Method:", req.method);
@@ -11,24 +15,26 @@ app.use((req, res, next) => {
 })
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.json({message: "Hello World."});
 });
 
 app.post("/testpost", (req, res) => {
-  res.json({message: "Everything Worked."});
+  res.json({message: "everything worked."});
 })
 
-app.use(notFound);
-app.use(errorHandler);
+app.use("/user", userRouter);
 
+
+app.use(errorHandler);
+app.use(notFound);
 
 const port = process.env.PORT || 3000;
 try {
-  app.listen(port, () =>
-    console.log(`Server is listening on port ${port}...`),
-  );
+    app.listen(port, () =>
+        console.log(`Server is listening on port ${port}...`),
+    );
 } catch (error) {
-  console.log(error);
+    console.log(error);
 }
 
 let isShuttingDown = false;

@@ -5,9 +5,46 @@ const dogsRouter = require('./routes/dogs');
 
 const app = express();
 
-// Your middleware here
+app.use(express.json());
 
-app.use('/', dogsRouter); // Do not remove this line
+app.use((req, res, next) => {
+  req.requestId = uuidv4();
+  res.set('X-Request-Id', req.requestId);
+
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}]: ${req.method} ${req.path} (${req.requestId})`);
+
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.method === "POST") {
+    const contentType = req.headers["content-type"];
+    if (!contentType || !contentType.includes("application/json")) {
+      return res.status(400).json({
+        error: "POST requests must have Content-Type: application/json",
+        requestId: req.requestId
+      });
+    }
+  }
+  next();
+});
+
+
+app.use("/images", express.static(path.join(__dirname, "public/images")));
+
+app.use('/', dogsRouter); 
+
+app.use((err, req, res, next) => {
+  console.error(err); 
+  res.status(500).json({
+    error: "Internal Server Error",
+    requestId: req.requestId
+  });
+});
+
+
+// Do not remove this line
 
 module.exports = app; // Do not remove this line
 
