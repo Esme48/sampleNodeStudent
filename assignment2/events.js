@@ -1,5 +1,5 @@
-const EventEmitter = require('events');
-const emitter = new EventEmitter();
+const EventEmitter = require('events')
+const emitter = new EventEmitter()
 
 if (require.main === module) {
   emitter.on('time', (message) => {
