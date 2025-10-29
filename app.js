@@ -1,6 +1,8 @@
 const express = require("express");
 const errorHandler = require("./assignment2/middleware/error-handler");
 const notFound = require("./assignment2/middleware/not-found");
+
+const userRouter = require("./routes/user");
 const app = express();
 
 app.use(express.json({ limit: "1kb" }));
@@ -13,16 +15,16 @@ app.use((req, res, next) => {
 })
 
 app.get("/", (req, res) => {
-  res.json({message: "Hello World."})
+  res.json({message: "Hello World."});
 });
 
 app.post("/testpost", (req, res) => {
-  res.json({message: "Everything Worked."});
+  res.json({message: "everything worked."});
 })
 
 app.use("/user", userRouter);
 
-app.use(notFound);
+
 app.use(errorHandler);
 app.use(notFound);
 
