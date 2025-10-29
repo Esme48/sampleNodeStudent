@@ -23,12 +23,14 @@ app.use(errorHandler);
 
 
 const port = process.env.PORT || 3000;
-try {
-  app.listen(port, () =>
-    console.log(`Server is listening on port ${port}...`),
-  );
-} catch (error) {
-  console.log(error);
+if (require.main === module) {
+  try {
+    app.listen(port, () =>
+      console.log(`Server is listening on port ${port}...`),
+    );
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 let isShuttingDown = false;
@@ -49,3 +51,5 @@ process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection:', reason);
   shutdown();
 });
+
+module.exports = app;
