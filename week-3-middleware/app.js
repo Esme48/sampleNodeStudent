@@ -6,7 +6,11 @@ const { ValidationError, NotFoundError, UnauthorizedError } = require('./errors'
 
 const app = express();
 
-app.use(express.json());
+app.use((req, res, next) => {
+  req.requestId = uuidv4();
+  res.set('X-Request-Id', req.requestId);
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -35,7 +39,7 @@ app.use((req, res, next) => {
   if (req.method === 'POST') {
     const contentType = req.headers['content-type'];
     if (!contentType || !contentType.includes('application/json')) {
-      return next(new ValidationError('POST requests must have Content-Type: application/json'));
+      return next(new ValidationError('Content-Type must be application/json'));
     }
   }
   next();
