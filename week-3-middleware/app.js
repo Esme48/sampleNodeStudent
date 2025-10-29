@@ -17,6 +17,18 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  if (req.method === "POST") {
+    const contentType = req.headers["content-type"];
+    if (!contentType || !contentType.includes("application/json")) {
+      return res.status(400).json({
+        error: "POST requests must have Content-Type: application/json",
+        requestId: req.requestId
+      });
+    }
+  }
+  next();
+});
 
 
 app.use("/images", express.static(path.join(__dirname, "public/images")));
