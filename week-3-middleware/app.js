@@ -9,14 +9,27 @@ const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
-  req.requestId = uuidv4();
-  res.set('X-Request-Id', req.requestId);
-
-  const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}]: ${req.method} ${req.path} (${req.requestId})`);
-
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(`[${new Date().toISOString()}]: ${req.method} ${req.path} (${req.requestId}) - ${duration}ms`);
+    if (duration > 1000) { 
+      console.warn(`WARNING: Slow request detected (${duration}ms) - ${req.method} ${req.path} (${req.requestId})`);
+    }
+  });
   next();
 });
+
+app.use((req, res, next) => {
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-Frame-Options', 'DENY');
+  res.set('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ limit: '1mb', extended: true }));
+
 
 app.use((req, res, next) => {
   if (req.method === 'POST') {
