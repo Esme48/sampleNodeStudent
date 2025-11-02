@@ -71,7 +71,7 @@ app.use((err, req, res, next) => {
   const prefix = isClientError ? 'WARN' : 'ERROR';
 
   if (status >= 400 && status < 500) {
-    console.warn(`Client Error: ${err.name}: ${err.message} (${req.requestId})`);
+    console.warn(`WARN: ${err.name}: ${err.message} (${req.requestId})`);
   } else {
     console.error(`ERROR: ${err.name}: ${err.message} (${req.requestId})`);
   }
