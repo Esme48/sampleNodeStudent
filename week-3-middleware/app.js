@@ -35,6 +35,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 
+
 app.use((req, res, next) => {
   if (req.method === 'POST') {
     const contentType = req.headers['content-type'];
@@ -50,6 +51,14 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 
 app.use('/', dogsRouter); 
 
+app.get('/error', (req, res, next) => {
+  next(new Error('Test error'));
+});
+
+app.get('/slow', async (req, res) => {
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  res.send('This was a slow response');
+});
 
 app.use((req, res, next) => {
   next(new NotFoundError('Route not found'));
@@ -57,10 +66,24 @@ app.use((req, res, next) => {
 
 
 app.use((err, req, res, next) => {
-  const status = err.statusCode || 500;
-  console.error(`${err.name}: ${err.message} (requestId: ${req.requestId})`);
-  res.status(status).json({ error: err.message, requestId: req.requestId });
+  const status = err.statusCode || err.status || 500;
+  const isClientError = status >= 400 && status < 500;
+  const prefix = isClientError ? 'WARN' : 'ERROR';
+
+  if (status >= 400 && status < 500) {
+    console.warn(`Client Error: ${err.name}: ${err.message} (${req.requestId})`);
+  } else {
+    console.error(`ERROR: ${err.name}: ${err.message} (${req.requestId})`);
+  }
+
+  const message = status === 500 ? 'Internal Server Error' : err.message;
+
+  res.status(status).json({
+    error: message,
+    requestId: req.requestId,
+  });
 });
+
 
 
 
