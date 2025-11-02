@@ -9,7 +9,7 @@ router.get("/dogs", (req, res) => {
 router.post("/adopt", (req, res) => {
     const { name, address, email, dogName } = req.body;
     if (!name || !email || !dogName) {
-        return res.status(400).json({ error: "All fields are required" });
+        return next(new ValidationError("Missing required fields"));
     }
 
     return res.status(201).json({
