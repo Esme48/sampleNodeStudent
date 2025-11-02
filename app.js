@@ -1,8 +1,6 @@
 const express = require("express");
-const errorHandler = require("./assignment2/middleware/error-handler");
-const notFound = require("./assignment2/middleware/not-found");
-
-const userRouter = require("./routes/user");
+const errorHandler = require("./middleware/error-handler");
+const notFound = require("./middleware/not-found");
 const app = express();
 
 app.use(express.json({ limit: "1kb" }));
@@ -29,12 +27,14 @@ app.use(errorHandler);
 app.use(notFound);
 
 const port = process.env.PORT || 3000;
-try {
+if (require.main === module) {
+  try {
     app.listen(port, () =>
-        console.log(`Server is listening on port ${port}...`),
+      console.log(`Server is listening on port ${port}...`),
     );
-} catch (error) {
+  } catch (error) {
     console.log(error);
+  }
 }
 
 let isShuttingDown = false;
@@ -55,3 +55,5 @@ process.on('unhandledRejection', (reason) => {
   console.error('Unhandled rejection:', reason);
   shutdown();
 });
+
+module.exports = app;
