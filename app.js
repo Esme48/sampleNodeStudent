@@ -3,6 +3,8 @@ const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
 const app = express();
 
+app.use(express.json({ limit: "1kb" }));
+
 app.use((req, res, next) => {
   console.log("Method:", req.method);
   console.log("Path:", req.path);
@@ -11,16 +13,18 @@ app.use((req, res, next) => {
 })
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.json({message: "Hello World."});
 });
 
 app.post("/testpost", (req, res) => {
-  res.json({message: "Everything Worked."});
+  res.json({message: "everything worked."});
 })
 
-app.use(notFound);
-app.use(errorHandler);
+app.use("/user", userRouter);
 
+
+app.use(errorHandler);
+app.use(notFound);
 
 const port = process.env.PORT || 3000;
 if (require.main === module) {
