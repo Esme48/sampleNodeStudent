@@ -59,7 +59,7 @@ describe("testing login, register, and logoff", () => {
 
   it("returns the expected name.", () => {
     saveData = saveRes._getJSONData();
-    expect(saveData.name).toBe("Bob");
+    expect(saveData.name).toBe("Jim");
   });
   it("A logon attempt with a bad password returns a 401", async () => {
     const req = httpMocks.createRequest({
