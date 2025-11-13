@@ -89,9 +89,7 @@ describe("testing login, register, and logoff", () => {
       body: { email: "manuel@sample.com", password: "Pa$$word20" },
     });
     saveRes = httpMocks.createResponse();
-    const jsonPromise = saveRes.jsonPromise();
-    login(req, saveRes);
-    await jsonPromise;
+    await login(req, saveRes);
     expect(saveRes.statusCode).toBe(200);
   });
   it("You can now logoff.", async () => {
