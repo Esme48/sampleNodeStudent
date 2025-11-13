@@ -9,7 +9,7 @@ const register = (req, res) => {
     res.status(StatusCodes.CREATED).json(req.body);
 }
 
-const login = (req, res) => {
+const logonUser = (req, res) => {
     const { email, password} = req.body;
     const currentUser = storedUsers.find((user) => user.email === email);
 
