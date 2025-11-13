@@ -104,6 +104,7 @@ describe("testing login, register, and logoff", () => {
 
 describe("testing task creation", () => {
   it("If you have a valid user id, create() succeeds (res.statusCode should be 201).", async () => {
+    setLoggedOnUser(user1);
     const req = httpMocks.createRequest({
       method: "POST",
       body: { title: "first task" },
