@@ -22,7 +22,12 @@ const create = async (req, res) => {
   }
 
   const loggedOnUser = getLoggedOnUser();
-  if (loggedOnUser.tasklist === undefined) {
+ 
+  if (!loggedOnUser) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "No user logged in" });
+  }
+
+  if (!loggedOnUser.tasklist) {
     loggedOnUser.tasklist = [];
   }
 
@@ -37,15 +42,24 @@ const create = async (req, res) => {
 const getAllTasks = async (req, res) => {
   try {
     const loggedOnUser = getLoggedOnUser();
+    if (!loggedOnUser) {
+      return res.status(401).json({ message: "No user logged in" });
+    }
     res.status(200).json(loggedOnUser.tasklist || []);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch tasks" });
   }
 };
 
+
 const getTaskById = async (req, res) => {
   try {
     const loggedOnUser = getLoggedOnUser();
+
+    if (!loggedOnUser) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "No user logged in" });
+    }
+
     const taskId = parseInt(req.params.id);
     const task = loggedOnUser.tasklist?.find((t) => t.id === taskId);
 
@@ -59,16 +73,21 @@ const getTaskById = async (req, res) => {
   }
 };
 
+
 const updateTask = async (req, res) => {
   if (!req.body) req.body = {}; 
 
-  const { error, value } = patchTaskSchema.validate(req.body, { abortEarly: false }); // NEW: validate
+  const { error, value } = patchTaskSchema.validate(req.body, { abortEarly: false });
 
   if (error) { 
     return res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 
   const loggedOnUser = getLoggedOnUser();
+  if (!loggedOnUser) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "No user logged in" });
+  }
+
   const taskId = parseInt(req.params.id);
   const task = loggedOnUser.tasklist?.find((t) => t.id === taskId);
 
@@ -81,19 +100,27 @@ const updateTask = async (req, res) => {
 };
 
 
+
 const deleteTask = async (req, res) => {
-const taskToFind = parseInt(req.params.id);
-const loggedOnUser = getLoggedOnUser();
-  if (loggedOnUser.tasklist) {  // if we have a list
-    const taskIndex = loggedOnUser.tasklist.findIndex((task)=> task.id === taskToFind);
-    if (taskIndex != -1) {
+  const taskToFind = parseInt(req.params.id);
+  const loggedOnUser = getLoggedOnUser();
+
+  if (!loggedOnUser) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "No user logged in" });
+  }
+
+  if (loggedOnUser.tasklist) {  
+    const taskIndex = loggedOnUser.tasklist.findIndex((task) => task.id === taskToFind);
+    if (taskIndex !== -1) {
       const task = loggedOnUser.tasklist[taskIndex];
-      loggedOnUser.tasklist.splice(taskIndex, 1); // do the delete
-      return res.json(task); // return the entry just deleted.  The default status code, OK, is returned.
+      loggedOnUser.tasklist.splice(taskIndex, 1); 
+      return res.json(task); 
     }
-  };
-  res.sendStatus(StatusCodes.NOT_FOUND); // else it's a 404.
+  }
+
+  res.sendStatus(StatusCodes.NOT_FOUND); 
 };
+
 
 module.exports = {
   create,
