@@ -2,7 +2,7 @@ const express = require("express");
 const errorHandler = require("./middleware/error-handler");
 const notFound = require("./middleware/not-found");
 const authMiddleware = require("./middleware/auth");
-const userRouter = require("./routes/user");
+
 const taskRouter = require("./routes/task");
 
 const app = express();
